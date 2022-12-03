@@ -1,16 +1,35 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-// ! import {PrismaAdapter} from 'next-auth/prisma-adapter' https://next-auth.js.org/adapters/prisma  DA VALUTARE
-import CredentialsProvider from "next-auth/providers/credentials";
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import DiscordProvider from "next-auth/providers/discord";
+// Prisma adapter for NextAuth, optional and can be removed
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
-import { prisma } from "@lib/prisma";
-import { comparePasswords } from "@lib/server/pwdSecurityHandler";
+import { env } from "../../../env/server.mjs";
+import { prisma } from "../../../server/db/client";
+
+import CredentialsProvider from "next-auth/providers/credentials";
+import { comparePasswords } from "../../../server/common/pwdSecurityHandler";
 
 export const authOptions: NextAuthOptions = {
+  // Include user.id on session
+  callbacks: {
+    session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+      }
+      return session;
+    },
+  },
+  // Configure one or more authentication providers
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
-  // ? adapter: PrismaAdapter
   providers: [
+    // DiscordProvider({
+    //   clientId: env.DISCORD_CLIENT_ID,
+    //   clientSecret: env.DISCORD_CLIENT_SECRET,
+    // }),
+    // ...add more providers here
     CredentialsProvider({
       name: "Credentials",
       credentials: { email: {}, password: {} },

@@ -3,6 +3,6 @@
  * @param o Un OBJ
  * @returns Un obj passabile come props
  */
-export const makeSerializable = <T extends any>(o: T): T => {
+export const makeSerializable = <T>(o: T): T => {
   return JSON.parse(JSON.stringify(o));
 };
