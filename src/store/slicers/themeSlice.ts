@@ -4,6 +4,7 @@ import { RootState } from "../store";
 interface ThemeState {
   avThemes: string[];
   actualTheme: string;
+  isLightMode: boolean;
 }
 
 const initialState: ThemeState = {
@@ -18,6 +19,7 @@ const initialState: ThemeState = {
     "business",
   ],
   actualTheme: "dark",
+  isLightMode: false,
 };
 
 export const themeSlice = createSlice({
@@ -33,6 +35,10 @@ export const themeSlice = createSlice({
 // selectors
 export const getAvThemes = (state: RootState) => state.theme.avThemes;
 export const getActualTheme = (state: RootState) => state.theme.actualTheme;
+export const getIsLightMode = (state: RootState) =>
+  state.theme.actualTheme.includes(
+    "light" || "garden" || "retro" || "cyberpunk"
+  );
 
 export const { SET_THEME } = themeSlice.actions;
 

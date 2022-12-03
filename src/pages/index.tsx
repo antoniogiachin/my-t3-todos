@@ -1,18 +1,49 @@
 import { type NextPage } from "next";
-import Head from "next/head";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { Hero } from "../components/Index/Hero";
-// import Link from "next/link";
-// import { signIn, signOut, useSession } from "next-auth/react";
+import { LoggedWelcome } from "../components/Index/LoggedWelcome";
+import { useAppDispatch, useAppSelector } from "../store/hooks/hooks";
+import { getVisitorCounter } from "../store/slicers/appStatusSlice";
 
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+  let contentActive: string | null;
+  const [showLoggedContent, setShowLoggedContent] = useState(false);
+
+  const visitorCounter = useAppSelector(getVisitorCounter);
+
+  const { data: sessionData } = useSession();
+  const dispatch = useAppDispatch();
+
+  const router = useRouter();
+
+  const handleAppStart = async () => {
+    if (!sessionData) {
+      await signIn("google", { callbackUrl: "/dashboard", redirect: false });
+    } else {
+      if (visitorCounter === 0) {
+        setShowLoggedContent(true);
+        setTimeout(() => {
+          router.replace("/dashboard");
+        }, 2000);
+      } else {
+        router.replace("/dashboard");
+      }
+    }
+  };
 
   return (
     <>
       <section>
-        <Hero />
+        {!showLoggedContent && <Hero handleAppStart={handleAppStart} />}
+        {/* se auth allora mostra  */}
+        {showLoggedContent && (
+          <LoggedWelcome name={sessionData?.user?.name as string} />
+        )}
       </section>
     </>
   );

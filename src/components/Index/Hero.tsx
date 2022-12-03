@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
 import {
   getActualTheme,
@@ -6,7 +6,11 @@ import {
   SET_THEME,
 } from "../../store/slicers/themeSlice";
 
-export const Hero = () => {
+interface HeroProps {
+  handleAppStart: () => Promise<void> | void;
+}
+
+export const Hero = ({ handleAppStart }: HeroProps) => {
   const avThemes = useAppSelector(getAvThemes);
   const actualTheme = useAppSelector(getActualTheme);
   const dispatch = useAppDispatch();
@@ -41,14 +45,16 @@ export const Hero = () => {
     <article className="hero min-h-screen bg-base-200">
       <div className="hero-content text-center">
         <div className="max-w-md">
-          <h1 className="mb-2 text-5xl font-bold">THINK NOW</h1>
-          <h1 className="text-5xl font-bold">DO THEN</h1>
+          <h1 className="mb-2 text-5xl font-bold">THINK NOW...</h1>
+          <h1 className="text-5xl font-bold">...DO THEN!</h1>
           <p className="py-6">
             TODO-AG is your new favourite web-application for keeping track of
             your todo&apos;s
           </p>
           <div className="space-x-4">
-            <button className="btn-primary btn">Get Started</button>
+            <button onClick={handleAppStart} className="btn-primary btn">
+              Get Started
+            </button>
             <div className="dropdown">
               <label tabIndex={0} className="btn-secondary btn m-1">
                 Change Theme

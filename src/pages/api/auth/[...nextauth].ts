@@ -7,9 +7,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
-import CredentialsProvider from "next-auth/providers/credentials";
-import { comparePasswords } from "../../../server/common/pwdSecurityHandler";
-
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
