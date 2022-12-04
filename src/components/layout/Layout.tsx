@@ -38,7 +38,7 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <Fragment>
       {showNavbar && <TheNavbar />}
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen bg-base-100">{children}</main>
     </Fragment>
   );
 };

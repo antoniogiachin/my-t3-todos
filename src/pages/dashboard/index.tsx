@@ -1,6 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import { AppProps } from "next/app";
 import React, { useEffect } from "react";
+import { UserRecap } from "../../components/Dashboard/UserRecap";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import {
@@ -15,6 +16,7 @@ interface DashboardProps {
     email: string;
     image: string;
     id: string;
+    role: string;
   };
 }
 
@@ -26,7 +28,11 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser }) => {
     dispatch(INCREMENT_VISIT_COUNTER());
   }, [dispatch]);
 
-  return <div>Dashboard</div>;
+  return (
+    <section>
+      <UserRecap sessionUser={sessionUser} />
+    </section>
+  );
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

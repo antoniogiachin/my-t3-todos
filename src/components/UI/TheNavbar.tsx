@@ -25,7 +25,7 @@ export const TheNavbar = () => {
 
   return (
     <div
-      className={`border-bottom border-sm navbar fixed border-black bg-base-100 shadow-sm ${
+      className={`border-bottom border-sm navbar fixed z-50 border-black bg-base-300 shadow-sm ${
         isLightMode ? "shadow-slate-800" : "shadow-slate-100"
       }`}
     >

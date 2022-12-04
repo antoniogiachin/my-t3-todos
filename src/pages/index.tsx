@@ -38,13 +38,11 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <section>
-        {!showLoggedContent && <Hero handleAppStart={handleAppStart} />}
-        {/* se auth allora mostra  */}
-        {showLoggedContent && (
-          <LoggedWelcome name={sessionData?.user?.name as string} />
-        )}
-      </section>
+      {!showLoggedContent && <Hero handleAppStart={handleAppStart} />}
+      {/* se auth allora mostra  */}
+      {showLoggedContent && (
+        <LoggedWelcome name={sessionData?.user?.name as string} />
+      )}
     </>
   );
 };
