@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import themeReducer from "./slicers/themeSlice";
 import appStatusReducer from "./slicers/appStatusSlice";
+import userReducer from "./slicers/userSlice";
 
 export const store = configureStore({
   reducer: {
     theme: themeReducer,
     appStatus: appStatusReducer,
+    user: userReducer,
   },
 });
 

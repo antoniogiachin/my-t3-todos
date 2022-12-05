@@ -55,7 +55,7 @@ export const Hero = ({ handleAppStart }: HeroProps) => {
             <button onClick={handleAppStart} className="btn-primary btn">
               Get Started
             </button>
-            <div className="dropdown">
+            <div className="dropdown-right dropdown ">
               <label tabIndex={0} className="btn-secondary btn m-1">
                 Change Theme
               </label>

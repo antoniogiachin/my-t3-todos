@@ -2,12 +2,14 @@ import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import { AppProps } from "next/app";
 import React, { useEffect } from "react";
 import { UserRecap } from "../../components/Dashboard/UserRecap";
+import { TheTable } from "../../components/UI/TheTable";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import {
   INCREMENT_VISIT_COUNTER,
   SET_SHOW_NAVBAR,
 } from "../../store/slicers/appStatusSlice";
+import { SET_USER_INFOS } from "../../store/slicers/userSlice";
 import { makeSerializable } from "../../utils/makeSerializable";
 
 interface DashboardProps {
@@ -26,11 +28,14 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser }) => {
   useEffect(() => {
     dispatch(SET_SHOW_NAVBAR(true));
     dispatch(INCREMENT_VISIT_COUNTER());
-  }, [dispatch]);
+    dispatch(SET_USER_INFOS(sessionUser));
+  }, [dispatch, sessionUser]);
 
   return (
     <section>
-      <UserRecap sessionUser={sessionUser} />
+      <UserRecap />
+      {/* tabella recap progetti todos  */}
+      {/* <TheTable toBeDisplayed={example} /> */}
     </section>
   );
 };
