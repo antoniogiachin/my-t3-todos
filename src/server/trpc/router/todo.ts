@@ -30,4 +30,12 @@ export const todoRouter = router({
         select: { title: true, description: true, todos: true },
       });
     }),
+  getTodoList: protectedProcedure
+    .input(z.object({ title: z.string() }))
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.todoList.findFirst({
+        where: { title: input.title, AND: { userId: ctx.session.user.id } },
+        select: { slug: true },
+      });
+    }),
 });

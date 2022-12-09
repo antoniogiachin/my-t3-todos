@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useState } from "react";
+import { trpc } from "../../utils/trpc";
+
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface TableValue {
   [key: string]: string | number | Array<unknown>;
@@ -6,12 +12,40 @@ interface TableValue {
 
 interface TheTableProps {
   toBeDisplayed: TableValue[];
+  baseDetailsUrl?: string;
+  tableContext?: string;
 }
 
-export const TheTable = ({ toBeDisplayed }: TheTableProps) => {
+export const TheTable = ({
+  toBeDisplayed,
+  baseDetailsUrl,
+  tableContext,
+}: TheTableProps) => {
   const [heads, setHeads] = useState<string[]>([]);
 
+  const router = useRouter();
+
   // const example = [{name: 'Antonio', surname: Giachin, age: 30},  {name: 'Antonio', surname: Giachin, age: 30}, ];
+  const { mutateAsync: getTodoParam, isLoading: getTodoParamLoading } =
+    trpc.todo.getTodoList.useMutation();
+
+  const getUrlFromContextAndPush = useCallback(
+    async (index: number) => {
+      switch (tableContext) {
+        case "todo-list":
+          const res = await getTodoParam({
+            title: toBeDisplayed[index]?.title as string,
+          });
+          if (!res?.slug) {
+            return;
+          }
+          router.push(`${baseDetailsUrl}/${res?.slug}`);
+        default:
+          break;
+      }
+    },
+    [tableContext, toBeDisplayed, baseDetailsUrl, router, getTodoParam]
+  );
 
   useEffect(() => {
     const first = toBeDisplayed[0];
@@ -41,7 +75,19 @@ export const TheTable = ({ toBeDisplayed }: TheTableProps) => {
           <td key={index}>{Array.isArray(td) ? td.length : td ? td : "-"}</td>
         ))}
         <th>
-          <button className="btn-ghost btn-xs btn">details</button>
+          <button
+            className="btn-ghost btn-xs btn"
+            onClick={() => {
+              getUrlFromContextAndPush(index);
+            }}
+          >
+            <span className="flex space-x-2">
+              {getTodoParamLoading && (
+                <FontAwesomeIcon icon={faSync} className="fa-spin me-2" />
+              )}
+              <span>Details</span>
+            </span>
+          </button>
         </th>
       </tr>
     ));

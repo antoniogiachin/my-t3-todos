@@ -47,7 +47,13 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser, userTodoList }) => {
       {/* tabella recap progetti todos  */}
       <article className="mt-10 flex flex-col space-y-6">
         <h2 className="text-2xl uppercase ">Your TODO&apos;s Lists</h2>
-        {todoList.length > 0 && <TheTable toBeDisplayed={todoList} />}
+        {todoList.length > 0 && (
+          <TheTable
+            toBeDisplayed={todoList}
+            baseDetailsUrl="/dashboard/todolist/"
+            tableContext="todo-list"
+          />
+        )}
       </article>
     </section>
   );
@@ -55,7 +61,6 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser, userTodoList }) => {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
-  console.log(session);
 
   if (!session) {
     return {
