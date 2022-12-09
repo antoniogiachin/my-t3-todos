@@ -1,13 +1,51 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { useAppDispatch } from "../../store/hooks/hooks";
+import { SET_MODAL } from "../../store/slicers/modalSlice";
 import { getUser } from "../../store/slicers/userSlice";
+import { TheButton } from "../UI/TheButton";
 import { UserCard } from "./DashboardCards/UserCard";
 
 export const UserRecap = () => {
+  const dispatch = useAppDispatch();
+
+  const showAddListModal = () => {
+    dispatch(
+      SET_MODAL({
+        id: "add-new-list",
+        header: "Add new List",
+        content: "<>Hello</>",
+      })
+    );
+  };
+
+  const showSecondAddListModal = () => {
+    dispatch(
+      SET_MODAL({
+        id: "add-new-lister",
+        header: "Add new listee",
+        content: "<>Hello</>",
+      })
+    );
+  };
+
   return (
     <article className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
       {/* USER INFOS  */}
       <UserCard />
+      <div></div>
+      <div className="flex justify-end">
+        <TheButton
+          label="Add new List"
+          isModalHanlder={true}
+          funcToExecute={showAddListModal}
+        />
+        <TheButton
+          label="Add new Listereee"
+          isModalHanlder={true}
+          funcToExecute={showSecondAddListModal}
+        />
+      </div>
       {/* todo recap  */}
       {/* <div className="card bg-base-100 shadow-xl lg:card-side">
         <figure>

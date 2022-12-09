@@ -5,7 +5,9 @@ import {
   getShowNavbar,
   SET_SHOW_NAVBAR,
 } from "../../store/slicers/appStatusSlice";
+import { getModalId } from "../../store/slicers/modalSlice";
 import { getActualTheme, SET_THEME } from "../../store/slicers/themeSlice";
+import { TheModal } from "../UI/TheModal";
 import { TheNavbar } from "../UI/TheNavbar";
 
 interface LayoutProps {
@@ -14,6 +16,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   const actualTheme = useSelector(getActualTheme);
   const showNavbar = useSelector(getShowNavbar);
+  const modalId = useSelector(getModalId);
 
   const dispatch = useAppDispatch();
   interface localStoredTheme {
@@ -39,6 +42,7 @@ export const Layout = ({ children }: LayoutProps) => {
     <Fragment>
       {showNavbar && <TheNavbar />}
       <main className="min-h-screen bg-base-100">{children}</main>
+      {modalId && <TheModal />}
     </Fragment>
   );
 };

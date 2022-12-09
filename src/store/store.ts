@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import themeReducer from "./slicers/themeSlice";
 import appStatusReducer from "./slicers/appStatusSlice";
+import modalReducer from "./slicers/modalSlice";
 import userReducer from "./slicers/userSlice";
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
     theme: themeReducer,
     appStatus: appStatusReducer,
     user: userReducer,
+    modal: modalReducer,
   },
 });
 
