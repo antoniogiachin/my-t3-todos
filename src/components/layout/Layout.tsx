@@ -6,7 +6,7 @@ import {
   getShowNavbar,
   SET_SHOW_NAVBAR,
 } from "../../store/slicers/appStatusSlice";
-import { getModalId } from "../../store/slicers/modalSlice";
+import { getModalId, RESET_MODAL } from "../../store/slicers/modalSlice";
 import { getActualTheme, SET_THEME } from "../../store/slicers/themeSlice";
 import { TheModal } from "../UI/TheModal";
 import { TheNavbar } from "../UI/TheNavbar";
@@ -38,6 +38,19 @@ export const Layout = ({ children }: LayoutProps) => {
     dispatch(SET_THEME(theme));
     document.body.setAttribute("data-theme", theme);
   }, [dispatch]);
+
+  useEffect(() => {
+    const handleResetOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && modalId) {
+        dispatch(RESET_MODAL());
+      }
+    };
+    document.addEventListener("keydown", handleResetOnEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleResetOnEscape);
+    };
+  }, [dispatch, modalId]);
 
   return (
     <Fragment>

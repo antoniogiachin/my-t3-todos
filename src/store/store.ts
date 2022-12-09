@@ -12,6 +12,17 @@ export const store = configureStore({
     user: userReducer,
     modal: modalReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: ["modal/SET_MODAL"],
+        // Ignore these field paths in all actions
+        //ignoredActionPaths: ["meta.arg", "payload.timestamp"],
+        // Ignore these paths in the state
+        ignoredPaths: ["modal"],
+      },
+    }),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

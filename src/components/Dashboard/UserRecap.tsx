@@ -4,27 +4,21 @@ import { useAppDispatch } from "../../store/hooks/hooks";
 import { SET_MODAL } from "../../store/slicers/modalSlice";
 import { getUser } from "../../store/slicers/userSlice";
 import { TheButton } from "../UI/TheButton";
+import { NewListForm } from "./DashboardActions/NewListForm";
 import { UserCard } from "./DashboardCards/UserCard";
 
 export const UserRecap = () => {
   const dispatch = useAppDispatch();
+
+  const modalContent = <NewListForm />;
 
   const showAddListModal = () => {
     dispatch(
       SET_MODAL({
         id: "add-new-list",
         header: "Add new List",
-        content: "<>Hello</>",
-      })
-    );
-  };
-
-  const showSecondAddListModal = () => {
-    dispatch(
-      SET_MODAL({
-        id: "add-new-lister",
-        header: "Add new listee",
-        content: "<>Hello</>",
+        content: modalContent,
+        isInformativeModal: false,
       })
     );
   };
@@ -39,11 +33,6 @@ export const UserRecap = () => {
           label="Add new List"
           isModalHanlder={true}
           funcToExecute={showAddListModal}
-        />
-        <TheButton
-          label="Add new Listereee"
-          isModalHanlder={true}
-          funcToExecute={showSecondAddListModal}
         />
       </div>
       {/* todo recap  */}
