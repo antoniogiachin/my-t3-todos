@@ -1,6 +1,6 @@
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
-import { AppProps } from "next/app";
-import React, { useEffect } from "react";
+import { Todo, TodoList } from "@prisma/client";
+import { GetServerSidePropsContext, NextPage } from "next";
+import React, { useEffect, useState } from "react";
 import { UserRecap } from "../../components/Dashboard/UserRecap";
 import { TheTable } from "../../components/UI/TheTable";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
@@ -20,9 +20,19 @@ interface DashboardProps {
     id: string;
     role: string;
   };
+  userTodoList: TodoList[];
 }
 
-const Dashboard: NextPage<DashboardProps> = ({ sessionUser }) => {
+export type RefetchTodoListArray = Array<{
+  todos: Todo[];
+  description: string;
+  title: string;
+}>;
+const Dashboard: NextPage<DashboardProps> = ({ sessionUser, userTodoList }) => {
+  const [todoList, setTodoList] = useState<TodoList[] | RefetchTodoListArray>(
+    userTodoList
+  );
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -33,9 +43,12 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser }) => {
 
   return (
     <section>
-      <UserRecap />
+      <UserRecap setTodoList={setTodoList} />
       {/* tabella recap progetti todos  */}
-      {/* <TheTable toBeDisplayed={example} /> */}
+      <article className="mt-10 flex flex-col space-y-6">
+        <h2 className="text-2xl uppercase ">Your TODO&apos;s Lists</h2>
+        {todoList.length > 0 && <TheTable toBeDisplayed={todoList} />}
+      </article>
     </section>
   );
 };
@@ -53,8 +66,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
+  const todoList = await prisma?.todoList.findMany({
+    where: { userId: session.user?.id },
+    select: { title: true, description: true, todos: true },
+  });
+
   return {
-    props: { sessionUser: makeSerializable(session.user) },
+    props: {
+      sessionUser: makeSerializable(session.user),
+      userTodoList: todoList || [],
+    },
   };
 }
 

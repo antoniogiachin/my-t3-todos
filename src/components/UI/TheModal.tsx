@@ -27,7 +27,7 @@ export const TheModal = () => {
               <label htmlFor={id} onClick={resetModal}>
                 <FontAwesomeIcon
                   icon={faXmarkCircle}
-                  className="cursor-pointer hover:scale-110"
+                  className="cursor-pointer hover:scale-125"
                 />
               </label>
             </div>

@@ -14,12 +14,24 @@ enum Role {
 }
 
 model Todo {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   description String
-  done        Boolean
+  done        Boolean   @default(false)
   title       String
-  userId      String  @db.ObjectId
-  User        User    @relation(fields: [userId], references: [id])
+  userId      String    @db.ObjectId
+  TodoList    TodoList? @relation(fields: [todoListId], references: [id])
+  todoListId  String?   @db.ObjectId
+  User        User      @relation(fields: [userId], references: [id])
+}
+
+model TodoList {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  slug        String @unique
+  todos       Todo[]
+  userId      String @db.ObjectId
+  User        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -50,15 +62,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
-  todos         Todo[]
-  role          Role      @default(USER)
+  role          Role       @default(USER)
   accounts      Account[]
   sessions      Session[]
+  TodoList      TodoList[]
+  Todo          Todo[]
 }
 
 model VerificationToken {

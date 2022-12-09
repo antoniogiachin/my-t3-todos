@@ -1,9 +1,24 @@
+import { TodoList } from "@prisma/client";
 import { useRef } from "react";
+import { RefetchTodoListArray } from "../../../pages/dashboard";
+import { useAppDispatch } from "../../../store/hooks/hooks";
+import { RESET_MODAL } from "../../../store/slicers/modalSlice";
+import { trpc } from "../../../utils/trpc";
 import { TheButton } from "../../UI/TheButton";
 
-export const NewListForm = () => {
+interface NewListFormProps {
+  setTodoList: React.Dispatch<
+    React.SetStateAction<TodoList[] | RefetchTodoListArray>
+  >;
+}
+
+export const NewListForm = ({ setTodoList }: NewListFormProps) => {
   const titleRef = useRef<HTMLInputElement>(null!);
   const descriptionRef = useRef<HTMLTextAreaElement>(null!);
+
+  const dispatch = useAppDispatch();
+  const mutation = trpc.todo.createTodoList.useMutation();
+  const { isLoading, mutateAsync: saveTodoList } = mutation;
 
   const handleNewListSave = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -12,6 +27,12 @@ export const NewListForm = () => {
       title: titleRef.current.value,
       description: descriptionRef.current.value,
     };
+
+    const res = await saveTodoList(toBeSave);
+    if (res) {
+      setTodoList(res);
+    }
+    dispatch(RESET_MODAL());
   };
 
   return (
@@ -34,7 +55,7 @@ export const NewListForm = () => {
         ></textarea>
       </div>
       <div className="flex justify-end">
-        <TheButton label="Add List" />
+        <TheButton label="Add List" isLoading={isLoading} />
       </div>
     </form>
   );

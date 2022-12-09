@@ -1,5 +1,7 @@
+import { TodoList } from "@prisma/client";
 import React from "react";
 import { useSelector } from "react-redux";
+import { RefetchTodoListArray } from "../../pages/dashboard";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import { SET_MODAL } from "../../store/slicers/modalSlice";
 import { getUser } from "../../store/slicers/userSlice";
@@ -7,10 +9,16 @@ import { TheButton } from "../UI/TheButton";
 import { NewListForm } from "./DashboardActions/NewListForm";
 import { UserCard } from "./DashboardCards/UserCard";
 
-export const UserRecap = () => {
+interface UserRecapProps {
+  setTodoList: React.Dispatch<
+    React.SetStateAction<TodoList[] | RefetchTodoListArray>
+  >;
+}
+
+export const UserRecap = ({ setTodoList }: UserRecapProps) => {
   const dispatch = useAppDispatch();
 
-  const modalContent = <NewListForm />;
+  const modalContent = <NewListForm setTodoList={setTodoList} />;
 
   const showAddListModal = () => {
     dispatch(
