@@ -1,4 +1,5 @@
 import { Fragment, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import {
@@ -42,7 +43,11 @@ export const Layout = ({ children }: LayoutProps) => {
     <Fragment>
       {showNavbar && <TheNavbar />}
       <main className="min-h-screen bg-base-100">{children}</main>
-      {modalId && <TheModal />}
+      {modalId &&
+        ReactDOM.createPortal(
+          <TheModal />,
+          document.querySelector<Element>("#portal") as Element
+        )}
     </Fragment>
   );
 };
