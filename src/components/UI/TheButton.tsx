@@ -7,7 +7,7 @@ import { getModalId, SET_MODAL } from "../../store/slicers/modalSlice";
 
 interface TheButtonProps {
   label?: string;
-  severity?: string;
+  severity?: "primary" | "secondary" | "accent" | "ghost" | "link";
   icon?: IconProp;
   isLoading?: boolean;
   isModalHanlder?: boolean;
@@ -17,7 +17,7 @@ interface TheButtonProps {
 export const TheButton = ({
   label = "provide a button label",
   icon = faPlus,
-  severity = "",
+  severity,
   isLoading,
   funcToExecute,
   isModalHanlder,
@@ -28,7 +28,7 @@ export const TheButton = ({
   const buttonTypeClass = useMemo(() => {
     switch (severity) {
       case "primary":
-        return "btn btn-primar";
+        return "btn btn-primary";
       case "secondary":
         return "btn btn-secondary";
       case "accent":
@@ -55,7 +55,9 @@ export const TheButton = ({
         {isLoading && (
           <FontAwesomeIcon icon={faSync} className="fa-spin me-2" />
         )}
-        {!isLoading && <FontAwesomeIcon icon={icon} className="mr-2" />}
+        {!isLoading && (
+          <FontAwesomeIcon icon={icon} className={`${label && "mr-2"}`} />
+        )}
         <span>{label}</span>
       </button>
     );
