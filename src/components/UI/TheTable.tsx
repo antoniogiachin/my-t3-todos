@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface TableValue {
-  [key: string]: string | number;
+  [key: string]: string | number | Array<unknown>;
 }
 
 interface TheTableProps {
@@ -38,7 +38,7 @@ export const TheTable = ({ toBeDisplayed }: TheTableProps) => {
           </label>
         </th>
         {Object.values(el).map((td, index) => (
-          <td key={index}>{td}</td>
+          <td key={index}>{Array.isArray(td) ? td.length : td ? td : "-"}</td>
         ))}
         <th>
           <button className="btn-ghost btn-xs btn">details</button>
