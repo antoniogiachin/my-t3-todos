@@ -4,7 +4,11 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../store/hooks/hooks";
 import {
   getShowNavbar,
+  getHasError,
   SET_SHOW_NAVBAR,
+  RESET_ERROR,
+  getHasNotification,
+  RESET_NOTIFICATION,
 } from "../../store/slicers/appStatusSlice";
 import { getModalId, RESET_MODAL } from "../../store/slicers/modalSlice";
 import { getActualTheme, SET_THEME } from "../../store/slicers/themeSlice";
@@ -15,7 +19,8 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 export const Layout = ({ children }: LayoutProps) => {
-  const actualTheme = useSelector(getActualTheme);
+  const hasError = useSelector(getHasError);
+  const hasNotification = useSelector(getHasNotification);
   const showNavbar = useSelector(getShowNavbar);
   const modalId = useSelector(getModalId);
 
@@ -51,6 +56,21 @@ export const Layout = ({ children }: LayoutProps) => {
       document.removeEventListener("keydown", handleResetOnEscape);
     };
   }, [dispatch, modalId]);
+
+  // reset error and notifications timer
+  useEffect(() => {
+    if (hasError) {
+      setTimeout(() => {
+        dispatch(RESET_ERROR());
+      }, 3000);
+    }
+
+    if (hasNotification) {
+      setTimeout(() => {
+        dispatch(RESET_NOTIFICATION());
+      }, 3000);
+    }
+  }, [hasError, hasNotification, dispatch]);
 
   return (
     <Fragment>
