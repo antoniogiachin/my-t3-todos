@@ -6,6 +6,15 @@ module.exports = {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["light", "dark", "synthwave", "retro", "cyberpunk",  "garden", "forest", "business"],
+    themes: [
+      "light",
+      "dark",
+      "synthwave",
+      "retro",
+      "cyberpunk",
+      "garden",
+      "forest",
+      "business",
+    ],
   },
 };

@@ -1,5 +1,9 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faSync, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSync,
+  faPlus,
+  IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks/hooks";
@@ -7,7 +11,14 @@ import { getModalId, SET_MODAL } from "../../store/slicers/modalSlice";
 
 interface TheButtonProps {
   label?: string;
-  severity?: "primary" | "secondary" | "accent" | "ghost" | "link";
+  severity?:
+    | "primary"
+    | "secondary"
+    | "accent"
+    | "ghost"
+    | "link"
+    | "error"
+    | "warning";
   icon?: IconProp;
   isLoading?: boolean;
   isModalHanlder?: boolean;
@@ -37,6 +48,10 @@ export const TheButton = ({
         return "btn btn-ghost";
       case "link":
         return "btn btn-link";
+      case "error":
+        return "btn btn-error";
+      case "warning":
+        return "btn btn-warning";
       default:
         return "btn";
     }

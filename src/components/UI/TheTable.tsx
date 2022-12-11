@@ -22,23 +22,26 @@ export const TheTable = ({
   tableContext,
 }: TheTableProps) => {
   const [heads, setHeads] = useState<string[]>([]);
+  const [buttonLoader, setButtonLoader] = useState<number | null>();
 
   const router = useRouter();
 
   // const example = [{name: 'Antonio', surname: Giachin, age: 30},  {name: 'Antonio', surname: Giachin, age: 30}, ];
-  const { mutateAsync: getTodoParam, isLoading: getTodoParamLoading } =
-    trpc.todo.getTodoList.useMutation();
+  const { mutateAsync: getTodoParam } =
+    trpc.todo.getTodoListByUserId.useMutation();
 
   const getUrlFromContextAndPush = useCallback(
     async (index: number) => {
       switch (tableContext) {
         case "todo-list":
+          setButtonLoader(index);
           const res = await getTodoParam({
             title: toBeDisplayed[index]?.title as string,
           });
           if (!res?.slug) {
             return;
           }
+          setButtonLoader(null);
           router.push(`${baseDetailsUrl}/${res?.slug}`);
         default:
           break;
@@ -82,7 +85,7 @@ export const TheTable = ({
             }}
           >
             <span className="flex space-x-2">
-              {getTodoParamLoading && (
+              {buttonLoader === index && (
                 <FontAwesomeIcon icon={faSync} className="fa-spin me-2" />
               )}
               <span>Details</span>
