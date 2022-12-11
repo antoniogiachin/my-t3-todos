@@ -11,6 +11,7 @@ import {
 } from "../../store/slicers/appStatusSlice";
 import { SET_USER_INFOS } from "../../store/slicers/userSlice";
 import { makeSerializable } from "../../utils/makeSerializable";
+import { trpc } from "../../utils/trpc";
 
 interface DashboardProps {
   sessionUser: {
@@ -20,7 +21,6 @@ interface DashboardProps {
     id: string;
     role: string;
   };
-  userTodoList: TodoList[];
 }
 
 export type RefetchTodoListArray = Array<{
@@ -28,10 +28,8 @@ export type RefetchTodoListArray = Array<{
   description: string;
   title: string;
 }>;
-const Dashboard: NextPage<DashboardProps> = ({ sessionUser, userTodoList }) => {
-  const [todoList, setTodoList] = useState<TodoList[] | RefetchTodoListArray>(
-    userTodoList
-  );
+const Dashboard: NextPage<DashboardProps> = ({ sessionUser }) => {
+  const { data: todoList } = trpc.todo.getTodoListsByUserId.useQuery();
 
   const dispatch = useAppDispatch();
 
@@ -43,14 +41,15 @@ const Dashboard: NextPage<DashboardProps> = ({ sessionUser, userTodoList }) => {
 
   return (
     <section>
-      <UserRecap setTodoList={setTodoList} />
+      <UserRecap />
       {/* tabella recap progetti todos  */}
       <article className="mt-10 flex flex-col space-y-6">
         <h2 className="text-2xl uppercase ">Your TODO&apos;s Lists</h2>
-        {todoList.length > 0 && (
+        {todoList && todoList.length > 0 && (
           <TheTable
             toBeDisplayed={todoList}
-            baseDetailsUrl="/dashboard/todolist/"
+            fieldToExclude={["id", "slug", "userId"]}
+            baseDetailsUrl="/dashboard/todolist"
             tableContext="todo-list"
           />
         )}
@@ -71,15 +70,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
-  const todoList = await prisma?.todoList.findMany({
-    where: { userId: session.user?.id },
-    select: { title: true, description: true, todos: true },
-  });
-
   return {
     props: {
       sessionUser: makeSerializable(session.user),
-      userTodoList: todoList || [],
     },
   };
 }

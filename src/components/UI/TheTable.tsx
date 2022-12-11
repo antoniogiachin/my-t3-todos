@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { trpc } from "../../utils/trpc";
 
-import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { faPlane, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface TableValue {
@@ -12,6 +12,7 @@ interface TableValue {
 
 interface TheTableProps {
   toBeDisplayed: TableValue[];
+  fieldToExclude?: string[];
   baseDetailsUrl?: string;
   tableContext?: string;
 }
@@ -19,6 +20,7 @@ interface TheTableProps {
 export const TheTable = ({
   toBeDisplayed,
   baseDetailsUrl,
+  fieldToExclude,
   tableContext,
 }: TheTableProps) => {
   const [heads, setHeads] = useState<string[]>([]);
@@ -28,7 +30,7 @@ export const TheTable = ({
 
   // const example = [{name: 'Antonio', surname: Giachin, age: 30},  {name: 'Antonio', surname: Giachin, age: 30}, ];
   const { mutateAsync: getTodoParam } =
-    trpc.todo.getTodoListByUserId.useMutation();
+    trpc.todo.getTodoListSlugByUserId.useMutation();
 
   const getUrlFromContextAndPush = useCallback(
     async (index: number) => {
@@ -51,10 +53,18 @@ export const TheTable = ({
   );
 
   useEffect(() => {
+    if (fieldToExclude?.length) {
+      fieldToExclude.forEach((field: string) => {
+        toBeDisplayed.forEach((tb) => {
+          delete tb[field];
+        });
+      });
+    }
+
     const first = toBeDisplayed[0];
     // @ts-ignore
     setHeads((prevHeads) => [...new Set(Object.keys(first))]);
-  }, [toBeDisplayed]);
+  }, [toBeDisplayed, fieldToExclude]);
 
   let headRendered!: React.ReactNode;
   if (!heads) {
@@ -84,12 +94,14 @@ export const TheTable = ({
               getUrlFromContextAndPush(index);
             }}
           >
-            <span className="flex space-x-2">
-              {buttonLoader === index && (
-                <FontAwesomeIcon icon={faSync} className="fa-spin me-2" />
+            <div className="flex space-x-2">
+              {buttonLoader === index ? (
+                <FontAwesomeIcon icon={faSync} className="fa-spin" />
+              ) : (
+                <FontAwesomeIcon icon={faPlane} />
               )}
               <span>Details</span>
-            </span>
+            </div>
           </button>
         </th>
       </tr>
@@ -108,7 +120,7 @@ export const TheTable = ({
               </label>
             </th>
             {headRendered}
-            <th></th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>{rowsRendered}</tbody>
@@ -117,7 +129,7 @@ export const TheTable = ({
           <tr>
             <th></th>
             {headRendered}
-            <th></th>
+            <th>Actions</th>
           </tr>
         </tfoot>
       </table>

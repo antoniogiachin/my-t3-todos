@@ -9,16 +9,10 @@ import { TheButton } from "../UI/TheButton";
 import { NewListForm } from "./DashboardActions/NewListForm";
 import { UserCard } from "./DashboardCards/UserCard";
 
-interface UserRecapProps {
-  setTodoList: React.Dispatch<
-    React.SetStateAction<TodoList[] | RefetchTodoListArray>
-  >;
-}
-
-export const UserRecap = ({ setTodoList }: UserRecapProps) => {
+export const UserRecap = () => {
   const dispatch = useAppDispatch();
 
-  const modalContent = <NewListForm setTodoList={setTodoList} />;
+  const modalContent = <NewListForm />;
 
   const showAddListModal = () => {
     dispatch(

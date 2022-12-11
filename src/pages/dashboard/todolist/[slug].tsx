@@ -1,44 +1,43 @@
-import { Todo, TodoList } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
-import { ParsedUrlQuery } from "querystring";
 import React, { useState } from "react";
 import { TheButton } from "../../../components/UI/TheButton";
 import { getServerAuthSession } from "../../../server/common/get-server-auth-session";
-import { makeSerializable } from "../../../utils/makeSerializable";
 
-import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 import { TheDivider } from "../../../components/UI/TheDivider";
 import { InsertTodo } from "../../../components/Dashboard/TodoList/InsertTodo";
 import { Severity, TheBadge } from "../../../components/UI/TheBadge";
 import { TodoTable } from "../../../components/Dashboard/TodoList/TodoTable";
 
 import { trpc } from "../../../utils/trpc";
+import { useRouter } from "next/router";
 
-interface TodoListPageProps {
-  selectedTodoList: TodoList & {
-    todos: Todo[];
-  };
-}
+const TodoListPage = () => {
+  const utils = trpc.useContext();
 
-const TodoListPage = ({ selectedTodoList }: TodoListPageProps) => {
-  // const utils = trpc.useContext(); => per Query Invalidation
+  const router = useRouter();
+  const { slug } = router.query;
 
-  const [todos, setTodos] = useState<Partial<Todo>[]>(selectedTodoList.todos);
   const [isDoneChangeLoading, setIsDoneChangeLoading] = useState("");
 
+  const { data: selectedTodoList } = trpc.todo.getTodoListBySlug.useQuery({
+    slug: slug as string,
+  });
+
   const { mutateAsync: updateTodoStatus } =
-    trpc.todo.changeTodoStatus.useMutation();
-
-  const { mutateAsync: deleteTodo } = trpc.todo.deleteTodo.useMutation();
-
-  /* ? https://trpc.io/docs/useContext#query-invalidation => Query invalidation *
-  
     trpc.todo.changeTodoStatus.useMutation({
       onSuccess() {
-        utils.todo.getAllTodos.invalidate();
+        utils.todo.getTodoListBySlug.invalidate();
       },
     });
-  */
+
+  const { mutateAsync: deleteTodo } = trpc.todo.deleteTodo.useMutation({
+    onSuccess() {
+      utils.todo.getTodoListBySlug.invalidate();
+    },
+  });
+
+  /*  https://trpc.io/docs/useContext#query-invalidation => Query invalidation */
 
   const handleUpdateTodoStatus = async (
     listTitle: string,
@@ -57,7 +56,6 @@ const TodoListPage = ({ selectedTodoList }: TodoListPageProps) => {
     }
 
     setIsDoneChangeLoading("");
-    setTodos(res?.todos);
   };
 
   const handleTodoDelete = async (listTitle: string, id: string) => {
@@ -70,20 +68,23 @@ const TodoListPage = ({ selectedTodoList }: TodoListPageProps) => {
     }
 
     setIsDoneChangeLoading("");
-    setTodos(res?.todos);
   };
 
   return (
     <section>
-      <h2 className="text-4xl">{selectedTodoList.title}</h2>
+      <h2 className="text-4xl">
+        {selectedTodoList ? selectedTodoList.title : "Loading..."}
+      </h2>
       <TheDivider />
-      <InsertTodo setTodos={setTodos} listSlug={selectedTodoList.slug} />
+      <InsertTodo
+        listSlug={(selectedTodoList && selectedTodoList.slug) || ""}
+      />
       <TheDivider>
         <TheBadge label="TODO" severity={Severity.SECONDARY} />
       </TheDivider>
-      {todos.length ? (
+      {selectedTodoList && selectedTodoList.todos.length ? (
         <TodoTable
-          todos={todos}
+          todos={selectedTodoList.todos}
           listTitle={selectedTodoList.title}
           isDoneChangeLoading={isDoneChangeLoading}
           handleUpdateTodoStatus={handleUpdateTodoStatus}
@@ -93,14 +94,20 @@ const TodoListPage = ({ selectedTodoList }: TodoListPageProps) => {
         <p className="text-center text-2xl">No TODOS yet...</p>
       )}
       <div className="flex justify-end p-2">
-        <TheButton severity="primary" label="save" icon={faSave} />
+        <TheButton
+          severity="primary"
+          label="Go Back"
+          icon={faArrowLeft}
+          funcToExecute={() => {
+            router.push("/dashboard");
+          }}
+        />
       </div>
     </section>
   );
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { slug } = context.params as ParsedUrlQuery;
   const session = await getServerAuthSession(context);
 
   if (!session) {
@@ -112,15 +119,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
-  const todoList = await prisma?.todoList.findUnique({
-    where: { slug: slug as string },
-    include: { todos: true },
-  });
-
   return {
-    props: {
-      selectedTodoList: makeSerializable(todoList) || [],
-    },
+    props: {},
   };
 }
 

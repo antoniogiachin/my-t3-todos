@@ -44,6 +44,7 @@ export const TodoTable = ({
                   <input
                     type="checkbox"
                     className="checkbox"
+                    readOnly
                     checked={isEveryTodoChecked}
                     onClick={() => {
                       handleUpdateTodoStatus(
@@ -73,6 +74,7 @@ export const TodoTable = ({
                   ) : (
                     <input
                       type="checkbox"
+                      readOnly
                       className="checkbox"
                       checked={todo.done}
                       onChange={() => {

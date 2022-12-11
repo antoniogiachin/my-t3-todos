@@ -6,6 +6,23 @@ export const todoRouter = router({
   getAllTodos: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.todo.findMany();
   }),
+  getTodoListsByUserId: protectedProcedure.query(async ({ ctx }) => {
+    const { session } = ctx;
+    const { user } = session;
+    return await ctx.prisma.todoList.findMany({ where: { userId: user.id } });
+  }),
+  getTodoListBySlug: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { session } = ctx;
+      const { user } = session;
+      const { id } = user;
+      const { slug } = input;
+      return await prisma?.todoList.findFirst({
+        where: { slug: slug as string, AND: { userId: id } },
+        include: { todos: true },
+      });
+    }),
   createTodoList: protectedProcedure
     .input(z.object({ title: z.string(), description: z.string() }))
     .mutation(async ({ input, ctx }) => {
@@ -30,7 +47,7 @@ export const todoRouter = router({
         select: { title: true, description: true, todos: true },
       });
     }),
-  getTodoListByUserId: protectedProcedure
+  getTodoListSlugByUserId: protectedProcedure
     .input(z.object({ title: z.string() }))
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.todoList.findFirst({

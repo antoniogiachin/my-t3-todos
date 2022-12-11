@@ -6,11 +6,12 @@ import { TheButton } from "../../UI/TheButton";
 import { trpc } from "../../../utils/trpc";
 
 interface InsertTodoProps {
-  setTodos: React.Dispatch<React.SetStateAction<Partial<Todo>[]>>;
   listSlug: string;
 }
 
-export const InsertTodo = ({ setTodos, listSlug }: InsertTodoProps) => {
+export const InsertTodo = ({ listSlug }: InsertTodoProps) => {
+  const utils = trpc.useContext();
+
   const [showInsertForm, setShowInsertForm] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null!);
@@ -18,7 +19,11 @@ export const InsertTodo = ({ setTodos, listSlug }: InsertTodoProps) => {
   const [done, setDone] = useState(false);
 
   const { mutateAsync: addTodoToList, isLoading } =
-    trpc.todo.addTodoToList.useMutation();
+    trpc.todo.addTodoToList.useMutation({
+      onSuccess() {
+        utils.todo.getTodoListBySlug.invalidate();
+      },
+    });
 
   const handleInsertTodo = async () => {
     const { value: title } = titleRef.current;
@@ -31,14 +36,6 @@ export const InsertTodo = ({ setTodos, listSlug }: InsertTodoProps) => {
       listSlug,
     });
 
-    const toInsert = {
-      id: res.id,
-      title: res.title,
-      description: res.description,
-      done: res.done,
-    };
-
-    setTodos((prevTodos) => [...prevTodos, toInsert]);
     setDone(false);
     titleRef.current.value = "";
     descriptionRef.current.value = "";
