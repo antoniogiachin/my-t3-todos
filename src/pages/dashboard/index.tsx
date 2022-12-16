@@ -1,6 +1,6 @@
-import { Todo, TodoList } from "@prisma/client";
+import { Todo } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { UserRecap } from "../../components/Dashboard/UserRecap";
 import { TheTable } from "../../components/UI/TheTable";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";

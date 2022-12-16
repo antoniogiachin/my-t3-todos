@@ -1,6 +1,4 @@
-import { TodoList } from "@prisma/client";
 import { useRef } from "react";
-import { RefetchTodoListArray } from "../../../pages/dashboard";
 import { useAppDispatch } from "../../../store/hooks/hooks";
 import { RESET_MODAL } from "../../../store/slicers/modalSlice";
 import { trpc } from "../../../utils/trpc";
@@ -14,6 +12,7 @@ export const NewListForm = () => {
 
   const dispatch = useAppDispatch();
   const mutation = trpc.todo.createTodoList.useMutation({
+    // https://tanstack.com/query/v4/docs/guides/optimistic-updates => Prossimo passo
     onSuccess() {
       utils.todo.getTodoListsByUserId.invalidate();
     },
@@ -28,7 +27,7 @@ export const NewListForm = () => {
       description: descriptionRef.current.value,
     };
 
-    const res = await saveTodoList(toBeSave);
+    await saveTodoList(toBeSave);
 
     dispatch(RESET_MODAL());
   };
